@@ -5,10 +5,12 @@
 <section class="row articles">
     <article class="col-md-6 mx-auto text-center border border-dark mb-3 p-3 mt-3 mr-1">
         <h2>{{ article.title }}</h2>
-        <div class="metadata">Ecrit le {{ article.createdAt | date('d/m/Y') }} à {{ article.createdAt | date('H:i:s') }} dans la catégorie {{ article.category.title }}</div><hr>
+        <div class="metadata">Ecrit le {{ article.createdAt | date('d/m/Y') }} à {{ article.createdAt | date('H:i:s') }}
+            dans la catégorie {{ article.category.title }}</div>
+        <hr>
         <div class="content">
             <div class="container">
-            <img src="{{ article.image }}" alt="picture" class="mt-4 mb-4">
+                <img src="{{ asset('images/articles/' ~ article.image) }}" alt="picture" class="img-fluid mt-4 mb-4">
             </div>
             {{ article.content | raw }}
         </div>
@@ -19,16 +21,17 @@
 
 <section id="commentaire" class="col-md-10 mx-auto">
     {% for comment in article.comments %}
-        <div class="comment">
-            <div class="row">
-                <div class="col-md-3">
-                    Anonymous
-                </div>
-                <div class="col-md-9">
-                    {{ comment.content | raw }}
-                </div>
+    <div class="comment">
+        <div class="row">
+            <div class="col-md-3">
+                Anonymous
             </div>
-        </div><hr>
+            <div class="col-md-9">
+                {{ comment.content | raw }}
+            </div>
+        </div>
+    </div>
+    <hr>
     {% endfor %}
 </section>
 

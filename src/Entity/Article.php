@@ -8,9 +8,15 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\HttpFoundation\File\File;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 
 #[ORM\Entity(repositoryClass: ArticleRepository::class)]
+/**
+ * @Vich\Uploadable
+ */
 class Article
 {
     #[ORM\Id]
@@ -18,10 +24,7 @@ class Article
     #[ORM\Column]
     private ?int $id = null;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     * @Assert\Length(min=10, max=255)
-     */
+    #[ORM\Column(length: 255)]
     private ?string $title = null;
 
     #[ORM\Column(type: Types::TEXT)]
@@ -39,6 +42,14 @@ class Article
 
     #[ORM\OneToMany(mappedBy: 'article', targetEntity: Comment::class, orphanRemoval: true)]
     private Collection $comments;
+
+    /**
+     * @Vich\UploadableField(mapping="articles", fileNameProperty="image") 
+     */
+    private $imageFile;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    private ?\DateTimeInterface $updatedAt = null;
 
     public function __construct()
     {
@@ -79,7 +90,7 @@ class Article
         return $this->image;
     }
 
-    public function setImage(string $image): self
+    public function setImage(?string $image): self
     {
         $this->image = $image;
 
@@ -138,5 +149,40 @@ class Article
         }
 
         return $this;
+    }
+
+    public function getImageFile(): ?File 
+    {
+        return $this->imageFile;
+    }
+
+    public function setImageFile(?File $imageFile = null):self 
+    {
+        $this->imageFile = $imageFile;
+
+        if($this->imageFile instanceof UploadedFile)
+        {
+            $this->updatedAt = new \DateTime;
+        }
+
+        return $this;
+    }
+
+    public function getUpdatedAt(): ?\DateTimeInterface
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(\DateTimeInterface $updatedAt): self
+    {
+        $this->updatedAt = $updatedAt;
+
+        return $this;
+    }
+
+    public function __toString()
+    {
+        // __toString() est une méthode magique qui s'exécute automatiquement lorsqu'on essaye d'afficher un objet
+        return $this->title;
     }
 }
